@@ -1,8 +1,8 @@
 /*Fondo de la pagina*/
 body {
-  background-image: url(/public/fondo.jpg);
-  background-size: cover; /*Cubre toda la pagina*/
-  background-attachment: fixed; /*Fija la imagen*/
+  background-image: url(/fondo.jpg);
+  background-size: cover; 
+  background-attachment: fixed;
   background-position: center;
 }
 
@@ -11,8 +11,9 @@ body {
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
-  background-color: rgba(255, 255, 255, 0.8); /*Recuadro blanco*/
-  border-radius: 10px; /*Bordes redondeados*/
+  color: black;
+  background-color: rgba(255, 255, 255, 0.8); 
+  border-radius: 10px;
 }
 
 .logo {
