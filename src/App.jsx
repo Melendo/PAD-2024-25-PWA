@@ -44,6 +44,33 @@ function App() {
       console.error("Error al buscar libros:", error)
     }
   };
+
+  //Interfaz HTML
+  return (
+    <main>
+      {/*Cabecera de la pagina*/}
+      <header>
+        <h1>Buscador de Libros</h1>
+      </header>
+      {/*Formulario de busqueda*/}
+      <section>
+        <form onSubmit={bookSearch}>
+        {/*Campo de texto para la busqueda*/}
+        <input
+          id="search-input"
+          type="text"
+          placeholder="Titulo del libro"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        {/*Boton de busqueda, se deshabilita si no se introduce nada en el campo de texto*/}
+        <button type="submit" disabled={!searchTerm.trim()}>
+          Buscar
+        </button>
+        </form>
+      </section>
+    </main>
+  );
 }
 
 export default App
