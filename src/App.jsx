@@ -17,7 +17,6 @@ function App() {
     "Terror": [],
     "Tecnología": [],
   });
-
   const [recentBooks, setRecentBooks] = useState([]);
 
   // Funcion para buscar libros
