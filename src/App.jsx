@@ -77,14 +77,14 @@ function App() {
       <link rel="manifest" href="/manifest.json" />
       {/* Cabecera de la pagina */}
       <header className="app-header">
-        <h1>📚 Buscador de Libros</h1>
+        <h1>📚 Buscador de Libros 📚</h1>
       </header>
       <section className="content-container">
         {/* Libros por Categorías */}
         <div className="categorias">
           <h2>Categorías</h2>
           {Object.keys(categories).length > 0 ? (
-            <ul className="categorias-list">
+            <div className="categorias-list">
               {Object.keys(categories).map((category) => (
                 <li key={category} className="categoria-item">
                   <button
@@ -99,18 +99,18 @@ function App() {
                     {category}
                   </button>
                   {showCategories[category] && (
-                    <ul className="categoria-books">
+                    <div className="categoria-books">
                       {categories[category].map((book, index) => (
-                        <li key={index} className="book-item">
+                        <div key={index} className="book-item">
                           <h5>{book.volumeInfo.title}</h5>
                           <p>{book.volumeInfo.authors?.join(', ') || 'Autor desconocido'}</p>
-                        </li>
+                        </div>
                       ))}
-                    </ul>
+                    </div>
                   )}
                 </li>
               ))}
-            </ul>
+            </div>
           ) : (
             <p>No hay libros guardados.</p>
           )}
