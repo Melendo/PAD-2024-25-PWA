@@ -80,6 +80,8 @@ function App() {
 
   return (
     <main className="app-container">
+      <link rel="manifest" href="/manifest.json" />
+      {/* Cabecera de la pagina */}
       <header className="app-header">
         <h1>📚 Buscador de Libros 📚</h1>
       </header>
