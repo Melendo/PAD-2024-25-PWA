@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://github.com/Melendo/PAD-2024-25-PWA",
+  "homepage": "https://melendo.github.io/PAD-2024-25-PWA",
   "scripts": {
   "dev": "vite",
   "build": "vite build",

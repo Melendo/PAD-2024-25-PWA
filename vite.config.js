@@ -4,6 +4,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: "/PAD-2024-25-PWA/",
   plugins: [
     react(),
     VitePWA({
