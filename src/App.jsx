@@ -16,7 +16,7 @@ function App() {
     Terror: [],
     Tecnología: [],
   });
-  const [recentBooks, setRecentBooks] = useState([]); // Libros recientes
+  const [recentBooks, setRecentBooks] = useState([]);
   const [showCategories, setShowCategories] = useState({});
 
   // Función para buscar libros
@@ -39,7 +39,7 @@ function App() {
         ...recentBooks.slice(0, 4),
       ];
       setRecentBooks(newRecentBooks);
-      localStorage.setItem('recentBooks', JSON.stringify(newRecentBooks)); // Guardar en Local Storage
+      localStorage.setItem('recentBooks', JSON.stringify(newRecentBooks));
     } catch (error) {
       console.error('Error al buscar libros:', error);
     }
@@ -64,6 +64,18 @@ function App() {
     localStorage.setItem('categories', JSON.stringify(updatedCategories));
   };
 
+  // Función para eliminar un libro de una categoría
+  const deleteBookFromCategory = (book, category) => {
+    const updatedCategories = { ...categories };
+    updatedCategories[category] = updatedCategories[category].filter(
+      (b) => b.id !== book.id
+    );
+    setCategories(updatedCategories);
+
+    // Guardar en Local Storage
+    localStorage.setItem('categories', JSON.stringify(updatedCategories));
+  };
+
   // Cargar las categorías y los libros recientes desde Local Storage al cargar la app
   useEffect(() => {
     const storedCategories = localStorage.getItem('categories');
@@ -80,8 +92,6 @@ function App() {
 
   return (
     <main className="app-container">
-      <link rel="manifest" href="/manifest.json" />
-      {/* Cabecera de la pagina */}
       <header className="app-header">
         <h1>📚 Buscador de Libros 📚</h1>
       </header>
@@ -101,16 +111,29 @@ function App() {
                     }
                     className="categoria-button"
                   >
-                    {category}
+                   🔽 {category} 
                   </button>
                   {showCategories[category] && (
                     <div className="categoria-books">
-                      {categories[category].map((book, index) => (
-                        <div key={index} className="book-item">
-                          <h5>{book.volumeInfo.title}</h5>
-                          <p>{book.volumeInfo.authors?.join(', ') || 'Autor desconocido'}</p>
-                        </div>
-                      ))}
+                      {categories[category].length > 0 ? (
+                        categories[category].map((book, index) => (
+                          <div key={index} className="book-item">
+                            <h5>{book.volumeInfo.title}</h5>
+                            <p>
+                              {book.volumeInfo.authors?.join(', ') ||
+                                'Autor desconocido'}
+                            </p>
+                            <button
+                              onClick={() => deleteBookFromCategory(book, category)}
+                              className="delete-button"
+                            >
+                              Eliminar
+                            </button>
+                          </div>
+                        ))
+                      ) : (
+                        <p>No hay libros en esta categoría.</p>
+                      )}
                     </div>
                   )}
                 </li>
