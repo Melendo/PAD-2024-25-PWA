@@ -33,11 +33,13 @@ function App() {
 
       const results = response.data.items || [];
       setBooks(results);
-
+      console.log(results)
       //Actualizar libros recientes
       const newRecentBooks = [
-        { title: searchTerm, timestamp: Date.now()},
+        { title: searchTerm, timestamp: Date.now() },
         ...recentBooks.slice(0, 4),
+
+
       ];
       setRecentBooks(newRecentBooks);
     } catch (error) {
@@ -55,19 +57,35 @@ function App() {
       {/*Formulario de busqueda*/}
       <section>
         <form onSubmit={bookSearch}>
-        {/*Campo de texto para la busqueda*/}
-        <input
-          id="search-input"
-          type="text"
-          placeholder="Titulo del libro"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        {/*Boton de busqueda, se deshabilita si no se introduce nada en el campo de texto*/}
-        <button type="submit" disabled={!searchTerm.trim()}>
-          Buscar
-        </button>
+          {/*Campo de texto para la busqueda*/}
+          <input
+            id="search-input"
+            type="text"
+            placeholder="Titulo del libro"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          {/*Boton de busqueda, se deshabilita si no se introduce nada en el campo de texto*/}
+          <button type="submit" onSubmit={bookSearch} disabled={!searchTerm.trim()}>
+            Buscar
+          </button>
         </form>
+      </section>
+      <section>
+      <div className="libros-obtenidos">
+          {books.length > 0 ? (
+            <ul>
+              {books.map((book) => (
+                <li key={book.id}>
+                  <h3>{book.volumeInfo.title}</h3>
+                  <p>{book.volumeInfo.authors?.join(', ') || 'Autor desconocido'}</p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No se han encontrado libros.</p>
+          )}
+        </div>
       </section>
     </main>
   );
