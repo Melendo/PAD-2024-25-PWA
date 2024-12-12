@@ -51,3 +51,157 @@ body {
 .read-the-docs {
   color: #888;
 }
+
+
+.app-container {
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.app-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.app-header h1 {
+  color: #333;
+  font-size: 2rem;
+}
+
+.content-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.categorias,
+.search-section {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  min-width: 250px;
+}
+
+.categorias {
+  flex: 1;
+}
+
+.search-section {
+  flex: 3;
+}
+
+.categorias-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.categoria-item {
+  margin-bottom: 10px;
+}
+
+.categoria-button {
+  width: 100%;
+  background: #007bff;
+  color: #fff;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.categoria-books {
+  margin-left: 10px;
+  margin-top: 10px;
+  list-style-type: circle;
+}
+
+.search-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.search-input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  min-width: 200px;
+}
+
+.search-button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.books-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.book-result {
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.category-select {
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  min-width: 200px;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+  .content-container {
+    flex-direction: column;
+  }
+
+  .categorias,
+  .search-section {
+    flex: unset;
+    width: 100%;
+  }
+
+  .search-form {
+    flex-direction: column;
+  }
+
+  .search-input {
+    width: 100%;
+  }
+
+  .search-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .categoria-button {
+    font-size: 0.9rem;
+    padding: 8px;
+  }
+
+  .book-result {
+    font-size: 0.9rem;
+  }
+}
