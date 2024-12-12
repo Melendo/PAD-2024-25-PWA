@@ -5,7 +5,6 @@ import './App.css';
 const GOOGLE_BOOKS_API_URL = 'https://www.googleapis.com/books/v1/volumes';
 
 function App() {
-  // Estados
   const [searchTerm, setSearchTerm] = useState('');
   const [books, setBooks] = useState([]);
   const [categories, setCategories] = useState({
@@ -17,11 +16,10 @@ function App() {
     Terror: [],
     Tecnología: [],
   });
-
-  const [recentBooks, setRecentBooks] = useState([]);
+  const [recentBooks, setRecentBooks] = useState([]); // Libros recientes
   const [showCategories, setShowCategories] = useState({});
 
-  // Funcion para buscar libros
+  // Función para buscar libros
   const bookSearch = async (e) => {
     e.preventDefault();
     try {
@@ -35,11 +33,13 @@ function App() {
       const results = response.data.items || [];
       setBooks(results);
 
+      // Guardar el libro en recientes y en localStorage
       const newRecentBooks = [
         { title: searchTerm, timestamp: Date.now() },
         ...recentBooks.slice(0, 4),
       ];
       setRecentBooks(newRecentBooks);
+      localStorage.setItem('recentBooks', JSON.stringify(newRecentBooks)); // Guardar en Local Storage
     } catch (error) {
       console.error('Error al buscar libros:', error);
     }
@@ -48,6 +48,7 @@ function App() {
   // Función para guardar un libro en una categoría
   const saveBookToCategory = (book, category) => {
     const updatedCategories = { ...categories };
+
     if (!updatedCategories[category]) {
       updatedCategories[category] = [];
     }
@@ -59,27 +60,30 @@ function App() {
       setShowCategories({ ...showCategories, [category]: false });
     }
 
-    // Guardar en localStorage
+    // Guardar en Local Storage
     localStorage.setItem('categories', JSON.stringify(updatedCategories));
   };
 
-  // Cargar las categorías desde localStorage al cargar la app
+  // Cargar las categorías y los libros recientes desde Local Storage al cargar la app
   useEffect(() => {
     const storedCategories = localStorage.getItem('categories');
+    const storedRecentBooks = localStorage.getItem('recentBooks');
+
     if (storedCategories) {
       setCategories(JSON.parse(storedCategories));
     }
+
+    if (storedRecentBooks) {
+      setRecentBooks(JSON.parse(storedRecentBooks));
+    }
   }, []);
 
-  // Interfaz HTML
   return (
     <main className="app-container">
-      {/* Cabecera de la pagina */}
       <header className="app-header">
         <h1>📚 Buscador de Libros 📚</h1>
       </header>
       <section className="content-container">
-        {/* Libros por Categorías */}
         <div className="categorias">
           <h2>Categorías</h2>
           {Object.keys(categories).length > 0 ? (
@@ -116,7 +120,6 @@ function App() {
         </div>
 
         <div className="search-section">
-          {/* Formulario de busqueda */}
           <form onSubmit={bookSearch} className="search-form">
             <input
               id="search-input"
@@ -134,7 +137,6 @@ function App() {
               Buscar
             </button>
           </form>
-          {/* Resultados de libros obtenidos */}
           <div className="libros-obtenidos">
             {books.length > 0 ? (
               <ul className="books-list">
@@ -164,13 +166,25 @@ function App() {
             )}
           </div>
         </div>
+
+        <div className="recent-books">
+          <h2>Recientes</h2>
+          {recentBooks.length > 0 ? (
+            <div className="categoria-books">
+              {recentBooks.map((book, index) => (
+                <div key={index} className="book-item">
+                  <h5>{book.title}</h5>
+                  <p>Fecha: {new Date(book.timestamp).toLocaleString()}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p>No hay libros recientes.</p>
+          )}
+        </div>
       </section>
     </main>
   );
 }
 
 export default App;
-
-/* CSS (App.css) */
-
-/* Estructura general */
