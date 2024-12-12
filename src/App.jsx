@@ -27,6 +27,7 @@ function App() {
         params: {
           q: searchTerm,
           maxResults: 10,
+          printType: "BOOKS",
         },
       });
 
