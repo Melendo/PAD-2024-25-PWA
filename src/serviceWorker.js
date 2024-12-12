@@ -1,16 +1,16 @@
-const cacheName = "book-app-cache";
+const CACHE_NAME = "book-app-cache";
 const appShellFiles = [
     "/",
     "/App.jsx",
     "/App.css",
-    "main.jsx",
-    "index.css",
-    "/public/fondo.jpg",
-    "/public/icon-192x192.png",
-    "/public/icon-512x512.png"
+    "/main.jsx",
+    "/index.css",
+    "/fondo.jpg",
+    "/icon-192x192.png",
+    "/icon-512x512.png"
 ];
 
-// Instalar el service worker
+// Instalar el Service Worker
 self.addEventListener("install", (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
@@ -24,23 +24,25 @@ self.addEventListener("install", (event) => {
 self.addEventListener("fetch", (event) => {
     event.respondWith(
         caches.match(event.request).then((response) => {
-            return response || fetch(event.request);
+            return response || fetch(event.request).catch(() => {
+                console.log("Fallo en la red y no se encontró en la caché.");
+            });
         })
     );
 });
 
-// Activar service worker y limpiar caches antiguas
+// Activar Service Worker y limpiar caches antiguas
 self.addEventListener("activate", (event) => {
     const cacheWhitelist = [CACHE_NAME];
     event.waitUntil(
         caches.keys().then((cacheNames) => {
-            Promise.all(
+            return Promise.all(
                 cacheNames.map((cacheName) => {
                     if (!cacheWhitelist.includes(cacheName)) {
                         return caches.delete(cacheName);
                     }
                 })
-            )
+            );
         })
     );
 });
