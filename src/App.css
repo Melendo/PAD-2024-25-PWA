@@ -43,8 +43,8 @@ body {
 }
 
 .categorias,
-.search-section,
-.recent-books {
+.section-busqueda,
+.busquedas-recientes {
   background-color: #fff;
   border-radius: 8px;
   padding: 10px;
@@ -52,21 +52,22 @@ body {
   flex: 1;
 }
 
-.recent-books {
-  flex: 0.5; /* Columna más estrecha para los recientes */
+.libros-recientes {
+  flex: 0.5;
+  /* Columna más estrecha para los recientes */
 }
 
 /* Categorías */
-.categorias-list {
+.lista-categorias {
   list-style-type: none;
   padding: 0;
 }
 
-.categoria-item {
+.item-categoria {
   margin-bottom: 10px;
 }
 
-.categoria-button {
+.button-categoria {
   width: 100%;
   background: #007bff;
   color: white;
@@ -78,22 +79,27 @@ body {
 }
 
 .categoria-button.recientes {
-  background: red; /* Botón rojo para la categoría Recientes */
+  background: red;
+  /* Botón rojo para la categoría Recientes */
 }
 
-.categoria-books {
+.categoria-libros {
   margin-top: 10px;
   text-align: start;
   list-style-type: none;
 }
 
 /* Libros */
-.books-list {
+.lista-libros {
   list-style-type: none;
   padding: 0;
 }
 
-.book-item {
+.a-libro {
+  margin: 0.5rem;
+}
+
+.item-libro {
   margin-top: 10px;
   padding: 10px;
   border-radius: 4px;
@@ -101,7 +107,7 @@ body {
   background-color: #f9f9f9;
 }
 
-.book-item.highlight {
+.item-libro.highlight {
   border-bottom: solid black 3px;
   border-top: solid black 3px;
   border-radius: 25px;
@@ -109,20 +115,20 @@ body {
 }
 
 /* Formularios */
-.search-form {
+.form-busqueda {
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
   flex-wrap: wrap;
 }
 
-.search-input {
+.input-busqueda {
   flex: 1;
   border-radius: 4px;
   border: 1px solid #ddd;
 }
 
-.search-button {
+.button-busqueda {
   background-color: #007bff;
   color: white;
   border: none;
@@ -131,43 +137,10 @@ body {
   cursor: pointer;
 }
 
-.category-select {
+.select-categoria {
   padding: 8px;
   border-radius: 4px;
   border: 1px solid #ddd;
-}
-
-/* Modal */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  max-width: 500px;
-  width: 90%;
-  text-align: center;
-}
-
-.modal-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
 }
 
 /* Media Queries */
@@ -177,11 +150,11 @@ body {
   }
 
   .categorias,
-  .search-section {
+  .section-busqueda {
     flex: unset;
   }
 
-  .search-form {
+  .form-busqueda {
     flex-direction: column;
   }
 
@@ -195,11 +168,11 @@ body {
     font-size: 1.5rem;
   }
 
-  .categoria-button {
+  .button-categoria {
     font-size: 0.9rem;
   }
 
-  .book-result {
+  .result-libros {
     font-size: 0.9rem;
   }
 

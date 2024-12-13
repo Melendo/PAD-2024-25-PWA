@@ -9,17 +9,16 @@ function App() {
   const [busquedasRecientes, setBusquedasRecientes] = useState([]);
 
   const [libros, setLibros] = useState([]);
-  const [libroSeleccionado, setLibroSeleccionado] = useState(null);
 
-  const [categorias, setCategorias] = useState(initialCategories);
+  const [categorias, setCategorias] = useState(CATEGORIAS);
   const [mostrarcategorias, setMostrarCategorias] = useState({});
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('');
 
   useEffect(() => {
-    loadFromLocalStorage();
+    cargarDatosDeLocalStorage();
   }, []);
 
-  const loadFromLocalStorage = () => {
+  const cargarDatosDeLocalStorage = () => {
     const categoriasGuardadas = localStorage.getItem('categorias');
     const busquedasRecientesGuardadas = localStorage.getItem('busquedasRecientes');
 
@@ -27,7 +26,7 @@ function App() {
     if (busquedasRecientesGuardadas) setBusquedasRecientes(JSON.parse(busquedasRecientesGuardadas));
   };
 
-  const handleSearch = async (e) => {
+  const ejecutarBusqueda = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.get(GOOGLE_BOOKS_API_URL, {
@@ -50,45 +49,45 @@ function App() {
     localStorage.setItem('busquedasRecientes', JSON.stringify(updatedBusquedasRecientes));
   };
 
-  const handleCategoryAction = (action, book, category) => {
+  const ejecutarAccionDeCategoria = (accion, libro, categoria) => {
     const updatedCategories = { ...categorias };
 
-    if (action === 'add') {
-      updatedCategories[category] = [...(updatedCategories[category] || []), book];
-    } else if (action === 'delete') {
-      updatedCategories[category] = updatedCategories[category]?.filter((b) => b.id !== book.id);
+    if (accion === 'guardar') {
+      updatedCategories[categoria] = [...(updatedCategories[categoria] || []), libro];
+    } else if (accion === 'eliminar') {
+      updatedCategories[categoria] = updatedCategories[categoria]?.filter((b) => b.id !== libro.id);
     }
 
     setCategorias(updatedCategories);
-    localStorage.setItem('categories', JSON.stringify(updatedCategories));
+    localStorage.setItem('categorias', JSON.stringify(updatedCategories));
   };
 
-  const toggleCategoryVisibility = (category) => {
-    setMostrarCategorias((prev) => ({ ...prev, [category]: !prev[category] }));
+  const toggleMostrarCategoria = (categoria) => {
+    setMostrarCategorias((prev) => ({ ...prev, [categoria]: !prev[categoria] }));
   };
 
-  const handleSaveToCategory = (book) => {
+  const guardarEnCategoria = (libro) => {
     if (!categoriaSeleccionada) {
       alert('Por favor, selecciona una categoría antes de guardar.');
       return;
     }
-    handleCategoryAction('add', book, categoriaSeleccionada);
+    ejecutarAccionDeCategoria('guardar', libro, categoriaSeleccionada);
   };
 
-  const renderCategoryList = () => (
+  const renderCategorias = () => (
     <div className="categorias">
       <h2>Categorías</h2>
       {Object.keys(categorias).length > 0 ? (
-        <ul className="categorias-list">
-          {Object.keys(categorias).map((category) => (
-            <li key={category} className="categoria-item">
+        <ul className="lista-categorias">
+          {Object.keys(categorias).map((categoria) => (
+            <li key={categoria} className="item-categoria">
               <button
-                onClick={() => toggleCategoryVisibility(category)}
-                className="categoria-button"
+                onClick={() => toggleMostrarCategoria(categoria)}
+                className="button-categoria"
               >
-                🔽 ({categorias[category]?.length || 0}) {category}
+                🔽 ({categorias[categoria]?.length || 0}) {categoria}
               </button>
-              {mostrarcategorias[category] && renderBooksInCategory(category)}
+              {mostrarcategorias[categoria] && renderLibrosDeCategoria(categoria)}
             </li>
           ))}
         </ul>
@@ -98,15 +97,14 @@ function App() {
     </div>
   );
 
-  const renderBooksInCategory = (category) => (
-    <div className="categoria-books">
-      {categorias[category]?.length > 0 ? (
-        categorias[category].map((book, index) => (
-          <BookItem
+  const renderLibrosDeCategoria = (categoria) => (
+    <div className="categoria-libros">
+      {categorias[categoria]?.length > 0 ? (
+        categorias[categoria].map((libro, index) => (
+          <ItemLibro
             key={index}
-            book={book}
-            onBookClick={() => setLibroSeleccionado(book)}
-            onDeleteClick={() => handleCategoryAction('delete', book, category)}
+            libro={libro}
+            onClickEliminar={() => ejecutarAccionDeCategoria('eliminar', libro, categoria)}
           />
         ))
       ) : (
@@ -115,15 +113,15 @@ function App() {
     </div>
   );
 
-  const renderRecentBooks = () => (
-    <div className="recent-books">
+  const renderBusquedasRecientes = () => (
+    <div className="busquedas-recientes">
       <h2>Recientes</h2>
       {busquedasRecientes.length > 0 ? (
-        <div className="categoria-books">
-          {busquedasRecientes.map((book, index) => (
-            <div key={index} className="book-item">
-              <h5>{book.title}</h5>
-              <p>Fecha: {new Date(book.timestamp).toLocaleString()}</p>
+        <div className="categoria-libros">
+          {busquedasRecientes.map((libro, index) => (
+            <div key={index} className="item-libro">
+              <h5>{libro.titulo}</h5>
+              <p>Fecha: {new Date(libro.fecha).toLocaleString()}</p>
             </div>
           ))}
         </div>
@@ -139,40 +137,40 @@ function App() {
         <h1>📚 Buscador de Libros 📚</h1>
       </header>
       <section className="content-container">
-        {renderCategoryList()}
-        <div className="search-section">
-          <form onSubmit={handleSearch} className="search-form">
+        {renderCategorias()}
+
+        <div className="section-busqueda">
+          <form onSubmit={ejecutarBusqueda} className="form-busqueda">
             <input
               type="text"
               placeholder="Título del libro"
               value={promptBusqueda}
               onChange={(e) => setPromptBusqueda(e.target.value)}
-              className="search-input"
+              className="input-busqueda"
             />
-            <button type="submit" disabled={!promptBusqueda.trim()} className="search-button">
+            <button type="submit" disabled={!promptBusqueda.trim()} className="button-busqueda">
               Buscar
             </button>
           </form>
           <select
             value={categoriaSeleccionada}
             onChange={(e) => setCategoriaSeleccionada(e.target.value)}
-            className="category-select"
+            className="select-categoria"
           >
             <option value="">Seleccionar categoría</option>
-            {Object.keys(categorias).map((category) => (
-              <option key={category} value={category}>
-                {category}
+            {Object.keys(categorias).map((categoria) => (
+              <option key={categoria} value={categoria}>
+                {categoria}
               </option>
             ))}
           </select>
           {libros.length > 0 ? (
-            <ul className="books-list">
-              {libros.map((book) => (
-                <BookItem
-                  key={book.id}
-                  book={book}
-                  onBookClick={() => setLibroSeleccionado(book)}
-                  onSaveClick={() => handleSaveToCategory(book)}
+            <ul className="lista-libros">
+              {libros.map((libro) => (
+                <ItemLibro
+                  key={libro.id}
+                  libro={libro}
+                  onClickGuardar={() => guardarEnCategoria(libro)}
                 />
               ))}
             </ul>
@@ -180,33 +178,34 @@ function App() {
             <p>No se han encontrado libros.</p>
           )}
         </div>
-        {renderRecentBooks()}
+
+        {renderBusquedasRecientes()}
       </section>
-      {libroSeleccionado && <BookDetailsModal book={libroSeleccionado} onClose={() => setLibroSeleccionado(null)} />}
     </main>
   );
 }
 
-const BookItem = ({ book, onBookClick, onSaveClick, onDeleteClick }) => (
-  <div className="book-item" onClick={onBookClick}>
-    <h5>{book.volumeInfo.title}</h5>
-    <p>{book.volumeInfo.authors?.join(', ') || 'Autor desconocido'}</p>
-    {onSaveClick && (
+const ItemLibro = ({ libro, onClickGuardar, onClickEliminar }) => (
+  <div className="item-libro">
+    <h5>{libro.volumeInfo.title}</h5>
+    <p>{libro.volumeInfo.authors?.join(', ') || 'Autor desconocido'}</p>
+    <a href={libro.volumeInfo.infoLink} className='a-libro'>
+      Más información
+    </a>
+    {onClickGuardar && (
       <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onSaveClick();
+        onClick={() => {
+          onClickGuardar();
         }}
         className="save-button"
       >
         Guardar
       </button>
     )}
-    {onDeleteClick && (
+    {onClickEliminar && (
       <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onDeleteClick();
+        onClick={() => {
+          onClickEliminar();
         }}
         className="delete-button"
       >
@@ -216,30 +215,7 @@ const BookItem = ({ book, onBookClick, onSaveClick, onDeleteClick }) => (
   </div>
 );
 
-const BookDetailsModal = ({ book, onClose }) => (
-  <div className="modal">
-    <div className="modal-content">
-      <button onClick={onClose} className="modal-close">
-        ✖
-      </button>
-      <h2>{book.volumeInfo.title}</h2>
-      <p>{book.volumeInfo.authors?.join(', ') || 'Autor desconocido'}</p>
-      <img
-        src={book.volumeInfo.imageLinks?.thumbnail || 'https://via.placeholder.com/150'}
-        alt={book.volumeInfo.title}
-      />
-      <div className="modal-description">
-        <p>{book.volumeInfo.description || 'Sin descripción disponible.'}</p>
-      </div>
-      <p>Publicado en: {book.volumeInfo.publishedDate || 'Desconocida'}</p>
-      <a href={book.volumeInfo.infoLink} target="_blank" rel="noopener noreferrer">
-        Más información
-      </a>
-    </div>
-  </div>
-);
-
-const initialCategories = {
+const CATEGORIAS = {
   Aventuras: [],
   'Ciencia Ficción': [],
   Histórica: [],
