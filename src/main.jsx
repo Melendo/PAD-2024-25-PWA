@@ -5,7 +5,7 @@ import App from './App.jsx'
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/serviceWorker.js")
+    navigator.serviceWorker.register("/PAD-2024-25-PWA/src/serviceWorker.js")
             .then((registration) => {
               console.log("Service Worker registered with scope:", registration.scope);
             })
