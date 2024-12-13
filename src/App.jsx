@@ -5,51 +5,53 @@ import './App.css';
 const GOOGLE_BOOKS_API_URL = 'https://www.googleapis.com/books/v1/volumes';
 
 function App() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [books, setBooks] = useState([]);
-  const [categories, setCategories] = useState(initialCategories);
-  const [recentBooks, setRecentBooks] = useState([]);
-  const [showCategories, setShowCategories] = useState({});
-  const [selectedBook, setSelectedBook] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [promptBusqueda, setPromptBusqueda] = useState('');
+  const [busquedasRecientes, setBusquedasRecientes] = useState([]);
+
+  const [libros, setLibros] = useState([]);
+  const [libroSeleccionado, setLibroSeleccionado] = useState(null);
+
+  const [categorias, setCategorias] = useState(initialCategories);
+  const [mostrarcategorias, setMostrarCategorias] = useState({});
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('');
 
   useEffect(() => {
     loadFromLocalStorage();
   }, []);
 
   const loadFromLocalStorage = () => {
-    const storedCategories = localStorage.getItem('categories');
-    const storedRecentBooks = localStorage.getItem('recentBooks');
+    const categoriasGuardadas = localStorage.getItem('categorias');
+    const busquedasRecientesGuardadas = localStorage.getItem('busquedasRecientes');
 
-    if (storedCategories) setCategories(JSON.parse(storedCategories));
-    if (storedRecentBooks) setRecentBooks(JSON.parse(storedRecentBooks));
+    if (categoriasGuardadas) setCategorias(JSON.parse(categoriasGuardadas));
+    if (busquedasRecientesGuardadas) setBusquedasRecientes(JSON.parse(busquedasRecientesGuardadas));
   };
 
   const handleSearch = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.get(GOOGLE_BOOKS_API_URL, {
-        params: { q: searchTerm, maxResults: 5, printType: "BOOKS" },
+        params: { q: promptBusqueda, maxResults: 5, printType: "BOOKS" },
       });
-      const results = response.data.items || [];
-      setBooks(results);
-      updateRecentBooks(searchTerm);
+      const resultadoPeticion = response.data.items || [];
+      setLibros(resultadoPeticion);
+      updateBusquedasRecientes(promptBusqueda);
     } catch (error) {
       console.error('Error al buscar libros:', error);
     }
   };
 
-  const updateRecentBooks = (term) => {
-    const updatedRecentBooks = [
-      { title: term, timestamp: Date.now() },
-      ...recentBooks.slice(0, 4),
+  const updateBusquedasRecientes = (promt) => {
+    const updatedBusquedasRecientes = [
+      { titulo: promt, fecha: Date.now() },
+      ...busquedasRecientes.slice(0, 4),
     ];
-    setRecentBooks(updatedRecentBooks);
-    localStorage.setItem('recentBooks', JSON.stringify(updatedRecentBooks));
+    setBusquedasRecientes(updatedBusquedasRecientes);
+    localStorage.setItem('busquedasRecientes', JSON.stringify(updatedBusquedasRecientes));
   };
 
   const handleCategoryAction = (action, book, category) => {
-    const updatedCategories = { ...categories };
+    const updatedCategories = { ...categorias };
 
     if (action === 'add') {
       updatedCategories[category] = [...(updatedCategories[category] || []), book];
@@ -57,36 +59,36 @@ function App() {
       updatedCategories[category] = updatedCategories[category]?.filter((b) => b.id !== book.id);
     }
 
-    setCategories(updatedCategories);
+    setCategorias(updatedCategories);
     localStorage.setItem('categories', JSON.stringify(updatedCategories));
   };
 
   const toggleCategoryVisibility = (category) => {
-    setShowCategories((prev) => ({ ...prev, [category]: !prev[category] }));
+    setMostrarCategorias((prev) => ({ ...prev, [category]: !prev[category] }));
   };
 
   const handleSaveToCategory = (book) => {
-    if (!selectedCategory) {
+    if (!categoriaSeleccionada) {
       alert('Por favor, selecciona una categoría antes de guardar.');
       return;
     }
-    handleCategoryAction('add', book, selectedCategory);
+    handleCategoryAction('add', book, categoriaSeleccionada);
   };
 
   const renderCategoryList = () => (
     <div className="categorias">
       <h2>Categorías</h2>
-      {Object.keys(categories).length > 0 ? (
+      {Object.keys(categorias).length > 0 ? (
         <ul className="categorias-list">
-          {Object.keys(categories).map((category) => (
+          {Object.keys(categorias).map((category) => (
             <li key={category} className="categoria-item">
               <button
                 onClick={() => toggleCategoryVisibility(category)}
                 className="categoria-button"
               >
-                🔽 ({categories[category]?.length || 0}) {category}
+                🔽 ({categorias[category]?.length || 0}) {category}
               </button>
-              {showCategories[category] && renderBooksInCategory(category)}
+              {mostrarcategorias[category] && renderBooksInCategory(category)}
             </li>
           ))}
         </ul>
@@ -98,12 +100,12 @@ function App() {
 
   const renderBooksInCategory = (category) => (
     <div className="categoria-books">
-      {categories[category]?.length > 0 ? (
-        categories[category].map((book, index) => (
+      {categorias[category]?.length > 0 ? (
+        categorias[category].map((book, index) => (
           <BookItem
             key={index}
             book={book}
-            onBookClick={() => setSelectedBook(book)}
+            onBookClick={() => setLibroSeleccionado(book)}
             onDeleteClick={() => handleCategoryAction('delete', book, category)}
           />
         ))
@@ -116,9 +118,9 @@ function App() {
   const renderRecentBooks = () => (
     <div className="recent-books">
       <h2>Recientes</h2>
-      {recentBooks.length > 0 ? (
+      {busquedasRecientes.length > 0 ? (
         <div className="categoria-books">
-          {recentBooks.map((book, index) => (
+          {busquedasRecientes.map((book, index) => (
             <div key={index} className="book-item">
               <h5>{book.title}</h5>
               <p>Fecha: {new Date(book.timestamp).toLocaleString()}</p>
@@ -143,33 +145,33 @@ function App() {
             <input
               type="text"
               placeholder="Título del libro"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              value={promptBusqueda}
+              onChange={(e) => setPromptBusqueda(e.target.value)}
               className="search-input"
             />
-            <button type="submit" disabled={!searchTerm.trim()} className="search-button">
+            <button type="submit" disabled={!promptBusqueda.trim()} className="search-button">
               Buscar
             </button>
           </form>
           <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
+            value={categoriaSeleccionada}
+            onChange={(e) => setCategoriaSeleccionada(e.target.value)}
             className="category-select"
           >
             <option value="">Seleccionar categoría</option>
-            {Object.keys(categories).map((category) => (
+            {Object.keys(categorias).map((category) => (
               <option key={category} value={category}>
                 {category}
               </option>
             ))}
           </select>
-          {books.length > 0 ? (
+          {libros.length > 0 ? (
             <ul className="books-list">
-              {books.map((book) => (
+              {libros.map((book) => (
                 <BookItem
                   key={book.id}
                   book={book}
-                  onBookClick={() => setSelectedBook(book)}
+                  onBookClick={() => setLibroSeleccionado(book)}
                   onSaveClick={() => handleSaveToCategory(book)}
                 />
               ))}
@@ -180,7 +182,7 @@ function App() {
         </div>
         {renderRecentBooks()}
       </section>
-      {selectedBook && <BookDetailsModal book={selectedBook} onClose={() => setSelectedBook(null)} />}
+      {libroSeleccionado && <BookDetailsModal book={libroSeleccionado} onClose={() => setLibroSeleccionado(null)} />}
     </main>
   );
 }
